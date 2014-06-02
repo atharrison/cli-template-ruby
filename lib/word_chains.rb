@@ -1,6 +1,6 @@
 require 'require_all'
 
-module Project
+module WordChains
 
 end
 
