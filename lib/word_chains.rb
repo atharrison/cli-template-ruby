@@ -7,3 +7,4 @@ end
 require_all 'lib'
 require 'pry'
 require 'pry-nav'
+require 'levenshtein-ffi'

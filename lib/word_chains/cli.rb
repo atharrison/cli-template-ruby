@@ -16,5 +16,11 @@ module WordChains
       s = Solver.new(options[:start_word], options[:end_word])
       puts s.solution
     end
+
+    desc "dict", "Prints some words"
+    def dict
+      d = Dictionary.new('data/words.txt')
+      puts d.words[0..10]
+    end
   end
 end
