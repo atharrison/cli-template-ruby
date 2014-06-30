@@ -8,11 +8,13 @@ module WordChains
       @end_word = end_word
       @dictionary = Dictionary.new('data/words.txt')
       @solutions = []
+      @best_solution = nil
     end
 
     def solve(candidates, word, goal, chain)
       if candidates.length == 0
-        raise "No solution"
+        return @best_solution unless @best_solution.nil?
+        return ["No solution"]
       end
 
       begin
@@ -26,31 +28,57 @@ module WordChains
 
       new_dist = Levenshtein.distance(candidate, goal)
 
-      if new_dist == 1
+      if new_dist == 1 && (@best_solution.nil? || @best_solution.size > chain.size)
         chain << candidate # Success!
         puts "Found a chain of size #{chain.size}"
-        @solutions << chain.dup
-        new_candidates = candidates.dup
-        new_candidates.delete(word)
-        begin
-          solve(new_candidates, candidate, goal, chain)
-        rescue
-          chain.pop
-          new_candidates.delete(candidate)
-          solve(new_candidates, word, goal, chain)
-        end
-      else
+        puts chain
+        @best_solution = chain.dup
+        #new_candidates = candidates.dup
+        #new_candidates.delete(word)
+        #begin
+        #  solve(new_candidates, candidate, goal, chain)
+        #rescue
+        #  chain.pop
+        #  new_candidates.delete(candidate)
+        #  solve(new_candidates, word, goal, chain)
+        #end
+      elsif !@best_solution.nil? && @best_solution.size > chain.size
         chain << candidate
-        #puts "Current chain: #{chain}"
-        new_candidates = candidates.dup
-        new_candidates.delete(word)
-        begin
-          solve(new_candidates, candidate, goal, chain)
-        rescue
-          chain.pop
-          new_candidates.delete(candidate)
-          solve(new_candidates, word, goal, chain)
-        end
+        puts "Current chain: #{chain}"
+        inner_solve(candidates, candidate, word, goal, chain)
+        #new_candidates = candidates.dup
+        #new_candidates.delete(word)
+        #begin
+        #  solve(new_candidates, candidate, goal, chain)
+        #rescue
+        #  chain.pop
+        #  new_candidates.delete(candidate)
+        #  solve(new_candidates, word, goal, chain)
+        #end
+      else
+        #chain.pop
+        inner_solve(candidates, candidate, word, goal, chain)
+        #new_candidates = candidates.dup
+        #new_candidates.delete(word)
+        #begin
+        #  solve(new_candidates, candidate, goal, chain)
+        #rescue
+        #  chain.pop
+        #  new_candidates.delete(candidate)
+        #  solve(new_candidates, word, goal, chain)
+        #end
+      end
+    end
+
+    def inner_solve(candidates, candidate, word, goal, chain)
+      new_candidates = candidates.dup
+      new_candidates.delete(word)
+      begin
+        solve(new_candidates, word, goal, chain)
+      rescue
+        chain.pop
+        new_candidates.delete(candidate)
+        solve(new_candidates, word, goal, chain)
       end
     end
 
